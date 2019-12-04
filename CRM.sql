@@ -1,0 +1,106 @@
+CREATE DATABASE IF NOT exists CRM;
+
+USE CRM;
+
+CREATE TABLE IF NOT EXISTS roles (
+	id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    description VARCHAR(100),
+    PRIMARY KEY (id)
+);
+CREATE TABLE IF NOT EXISTS accounts (
+	account_id INT NOT NULL AUTO_INCREMENT,
+    email VARCHAR(100) NOT NULL,
+    password VARCHAR(100) NOT NULL,
+    fullname NVARCHAR(100) NOT NULL,
+    phone VARCHAR(100),
+    address NVARCHAR(100),
+    role_id int not null,
+    unique (email),
+    PRIMARY KEY (account_id)
+);
+
+CREATE TABLE IF NOT EXISTS status (
+	status_id INT NOT NULL AUTO_INCREMENT,
+    status_name VARCHAR(50) NOT NULL,
+    PRIMARY KEY (status_id)
+);
+
+CREATE TABLE IF NOT EXISTS groupwork (
+	group_id INT NOT NULL AUTO_INCREMENT,
+    group_name NVARCHAR(255) NOT NULL,
+    description VARCHAR(255),
+    PRIMARY KEY (group_id)
+);
+
+CREATE TABLE IF NOT EXISTS tasks (
+	task_id INT NOT NULL AUTO_INCREMENT,
+    task_name NVARCHAR(50) NOT NULL,
+    end_date DATE,
+    group_id INT NOT NULL,
+    account_id INT NOT NULL,
+    status_id INT NOT NULL,
+    PRIMARY KEY (task_id)
+);
+
+ALTER TABLE accounts ADD FOREIGN KEY (role_id) REFERENCES roles (id)  ON DELETE CASCADE;
+ALTER TABLE tasks ADD FOREIGN KEY (account_id) REFERENCES accounts (account_id)  ON DELETE CASCADE;
+ALTER TABLE tasks ADD FOREIGN KEY (group_id) REFERENCES groupwork (group_id)  ON DELETE CASCADE;
+ALTER TABLE tasks ADD FOREIGN KEY (status_id) REFERENCES status (status_id)  ON DELETE CASCADE;
+
+
+INSERT INTO roles( name, description ) VALUES ("ROLE_ADMIN", "Quản trị hệ thống");
+INSERT INTO roles( name, description ) VALUES ("ROLE_MANAGER", "Quản lý");
+INSERT INTO roles( name, description ) VALUES ("ROLE_USER", "Nhân viên");
+
+INSERT INTO status( status_name ) VALUES ("Chưa thực hiện");
+INSERT INTO status( status_name ) VALUES ("Đang thực hiện");
+INSERT INTO status( status_name ) VALUES ("Đã hoàn thành");
+
+INSERT INTO accounts (email,password,fullname,phone,address,role_id) values ("admin@gmail.com","admin", "Admin","091325","address",1);
+INSERT INTO accounts (email,password,fullname,phone,address,role_id) values ("minh123@gmail.com","123456", "abc","012658","address",2);
+INSERT INTO accounts (email,password,fullname,phone,address,role_id) values ("mty123@gmail.com","123456", "cde","016587","address",3);
+INSERT INTO accounts (email,password,fullname,phone,address,role_id) values ("thuan@gmail.com","123456", "CDE","0934568","address",1);
+INSERT INTO accounts (email,password,fullname,phone,address,role_id) values ("daling@gmail.com","123456", "EFG","015879","address",2);
+
+INSERT INTO groupwork (group_name, description) VALUES ("Marketing","Phân tích dự án");
+INSERT INTO groupwork (group_name, description) VALUES ("System","Thiết kế hệ thống");
+INSERT INTO groupwork (group_name, description) VALUES ("Android/IOS","Lập trình Android/IOS");
+INSERT INTO groupwork (group_name, description) VALUES ("Website","Lập trình Website");
+
+INSERT INTO tasks (task_name, end_date, account_id, group_id, status_id) VALUES ("task 1", "2019/05/30",2, 1,3);
+INSERT INTO tasks (task_name,end_date, account_id, group_id, status_id) VALUES ("task 2", "2019/05/30",1, 1,2);
+INSERT INTO tasks (task_name, end_date, account_id, group_id, status_id) VALUES ("task 3", "2019/05/30",4, 1,1);
+
+INSERT INTO tasks (task_name,end_date, account_id, group_id, status_id) VALUES ("task 1",  "2019/05/30",1,2,2);
+INSERT INTO tasks (task_name, end_date, account_id, group_id, status_id) VALUES ("task 2", "2019/05/30",5,2,1);
+
+INSERT INTO tasks (task_name, end_date, account_id, group_id, status_id) VALUES ("task 1",  "2019/05/30",3, 3,3);
+INSERT INTO tasks (task_name, end_date, account_id, group_id, status_id) VALUES ("task 2",  "2019/05/30",5, 3,3);
+
+INSERT INTO tasks (task_name, end_date, account_id, group_id, status_id) VALUES ("task 1", "2019/05/30",2, 4,2);
+INSERT INTO tasks (task_name, end_date, account_id, group_id, status_id) VALUES ("task 2", "2019/05/30",4, 4,2);
+
+DELETE FROM tasks WHERE task_id=19;
+select *from roles;
+select *from tasks;
+select *from groupwork;
+select *from accounts;
+select *from status;
+select *from accounts where account_id= 6;
+select a.account_id, a.email,a.password,a.fullname,a.phone,a.address,r.name as role_name from accounts a join roles r on (a.role_id=r.id)
+;
+select a.account_id, a.email,a.password,a.fullname,a.phone,a.address,r.name as role_name from accounts a join roles r on (a.role_id=r.id) where account_id=2;
+select *from tasks where group_id=2;
+
+select t.task_id, t.task_name, t.end_date,g.group_name, a.fullname, s.status_name from tasks t, groupwork g, accounts a, status s 
+where t.group_id=g.group_id and t.account_id=a.account_id and t.status_id=s.status_id and t.task_id=1;
+;
+
+select t.task_id, t.task_name, t.end_date,g.group_name, a.fullname, s.status_name from tasks t, groupwork g, accounts a, status s 
+where t.group_id=g.group_id and t.account_id=a.account_id and t.status_id=s.status_id and a.account_id=1;
+select a.account_id, a.email,a.password,a.fullname,a.phone,a.address,r.name as role_name from accounts a join roles r on (a.role_id=r.id)
+where email= "admin@gmail.com";
+select *from accounts where email= "admin@gmail.com";
+select distinct status_name from status;
+DROP DATABASE CRM;
